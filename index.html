@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Green 스마트 교복 은행</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght=300;400;500;700;900&display=swap');
+    body { font-family: 'Noto Sans KR', sans-serif; }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col justify-between">
+
+  <!-- 헤더 -->
+  <header class="bg-emerald-600 text-white shadow-md sticky top-0 z-50">
+    <div class="max-w-md mx-auto px-4 py-3 flex justify-between items-center">
+      <div class="flex items-center space-x-2">
+        <i class="fa-solid fa-seedling text-xl"></i>
+        <h1 class="font-bold text-lg tracking-tight">GreenSchool 교복 나눔</h1>
+      </div>
+      <div class="text-xs bg-emerald-700 px-2.5 py-1 rounded-full font-medium">
+        탄소 저감 &middot; 공유 경제
+      </div>
+    </div>
+  </header>
+
+  <!-- 메인 컨테이너 -->
+  <main class="max-w-md mx-auto w-full p-4 mb-16 space-y-6">
+
+    <!-- 소개 배너 -->
+    <section class="bg-gradient-to-br from-emerald-500 to-teal-600 text-white p-5 rounded-2xl shadow-sm">
+      <h2 class="text-xl font-bold mb-2">스마트 교복 대여 &middot; 나눔</h2>
+      <p class="text-xs text-emerald-100 leading-relaxed">
+        점심시간 긴 대기 없이 핸드폰으로 미리 예약하고 간편하게 수령하세요. 교복 재사용으로 환경 보호와 가계 부담을 줄입니다.
+      </p>
+    </section>
+
+    <!-- 교복 선택 및 수량 담기 섹션 -->
+    <section class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
+      <h3 class="font-bold text-base mb-4 flex items-center text-slate-700">
+        <i class="fa-solid fa-shirt text-emerald-600 mr-2"></i> 대여 품목 및 수량 선택
+      </h3>
+      
+      <div class="space-y-4">
+        <!-- 품목 선택 -->
+        <div>
+          <label class="block text-xs font-medium text-slate-500 mb-1">교복 품목</label>
+          <select id="itemSelect" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-emerald-500">
+            <option value="동복 자켓">동복 자켓</option>
+            <option value="셔츠/블라우스">셔츠 / 블라우스</option>
+            <option value="학생 바지/스커트">학생 바지 / 스커트</option>
+            <option value="조끼 및 가디건">조끼 및 가디건</option>
+            <option value="하복 생활복 상의">하복 생활복 상의</option>
+          </select>
+        </div>
+
+        <!-- 사이즈 선택 -->
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-medium text-slate-500 mb-1">사이즈</label>
+            <select id="sizeSelect" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-emerald-500">
+              <option value="90 (S)">90 (S)</option>
+              <option value="95 (M)">95 (M)</option>
+              <option value="100 (L)">100 (L)</option>
+              <option value="105 (XL)">105 (XL)</option>
+              <option value="110 (2XL)">110 (2XL)</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-xs font-medium text-slate-500 mb-1">수량 (2개 이상 가능)</label>
+            <div class="flex items-center border border-slate-200 rounded-xl bg-slate-50 overflow-hidden">
+              <button type="button" onclick="adjustCount(-1)" class="px-3 py-2 text-slate-500 hover:bg-slate-200 transition"><i class="fa-solid fa-minus text-xs"></i></button>
+              <input type="number" id="itemCount" value="1" min="1" max="5" class="w-full text-center bg-transparent text-sm font-bold focus:outline-none">
+              <button type="button" onclick="adjustCount(1)" class="px-3 py-2 text-slate-500 hover:bg-slate-200 transition"><i class="fa-solid fa-plus text-xs"></i></button>
+            </div>
+          </div>
+        </div>
+
+        <button type="button" onclick="addToCart()" class="w-full bg-emerald-600 hover:bg-emerald-700 text-white font-medium py-3 rounded-xl text-sm transition shadow-sm flex items-center justify-center space-x-2">
+          <i class="fa-solid fa-cart-plus"></i>
+          <span>대여 목록에 담기</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- 신청 목록 (장바구니) -->
+    <section class="bg-white p-5 rounded-2xl shadow-sm border border-slate-100">
+      <h3 class="font-bold text-base mb-3 flex items-center text-slate-700">
+        <i class="fa-solid fa-list-check text-emerald-600 mr-2"></i> 신청 대기 목록
+      </h3>
+      <div id="cartList" class="divide-y divide-slate-100 mb-4 min-h-[60px] flex flex-col justify-center">
+        <p class="text-xs text-slate-400 text-center py-2">담긴 교복 품목이 없습니다.</p>
+      </div>
+
+      <!-- 수령 시간 선택 -->
+      <div class="border-t border-slate-100 pt-4 space-y-3">
+        <div>
+          <label class="block text-xs font-medium text-slate-500 mb-1">수령 희망 시간 (점심시간 등)</label>
+          <input type="text" id="pickupTime" placeholder="예: 점심시간 12:30" class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2.5 text-sm focus:outline-none focus:border-emerald-500">
+        </div>
+
+        <button type="button" onclick="submitReservation()" class="w-full bg-teal-700 hover:bg-teal-800 text-white font-bold py-3.5 rounded-xl text-sm transition shadow-sm">
+          교복 대여 예약 완료하기
+        </button>
+      </div>
+    </section>
+
+    <!-- 이용 안내 카드 -->
+    <section class="bg-emerald-50 border border-emerald-100 p-4 rounded-2xl text-xs space-y-2 text-emerald-900">
+      <div class="font-bold flex items-center">
+        <i class="fa-solid fa-circle-info mr-1.5 text-emerald-600"></i> 교복 상태 및 분류 안내
+      </div>
+      <p class="text-emerald-800 leading-relaxed">
+        - <strong>A급</strong>: 새것과 유사한 최상 컨디션<br>
+        - <strong>B급</strong>: 세탁 및 착용에 문제 없는 깔끔한 상태<br>
+        - 수령 시 교실로 찾아올 필요 없이 지정 시간에 교복 은행에서 즉시 수령 가능합니다.
+      </p>
+    </section>
+
+  </main>
+
+  <!-- 푸터 -->
+  <footer class="bg-slate-200 text-slate-500 py-4 text-center text-xs">
+    <p>&copy; 2026 GreenSchool. All rights reserved.</p>
+  </footer>
+
+  <!-- 자바스크립트 기능 구현 -->
+  <script>
+    let cart = [];
+
+    function adjustCount(amount) {
+      const input = document.getElementById('itemCount');
+      let val = parseInt(input.value) + amount;
+      if (val < 1) val = 1;
+      if (val > 5) val = 5;
+      input.value = val;
+    }
+
+    function addToCart() {
+      const item = document.getElementById('itemSelect').value;
+      const size = document.getElementById('sizeSelect').value;
+      const count = parseInt(document.getElementById('itemCount').value);
+
+      // 이미 동일한 품목과 사이즈가 있으면 수량 합산
+      const existing = cart.find(i => i.item === item && i.size === size);
+      if (existing) {
+        existing.count += count;
+      } else {
+        cart.push({ item, size, count });
+      }
+      renderCart();
+    }
+
+    function removeFromCart(index) {
+      cart.splice(index, 1);
+      renderCart();
+    }
+
+    function renderCart() {
+      const cartList = document.getElementById('cartList');
+      if (cart.length === 0) {
+        cartList.innerHTML = `<p class="text-xs text-slate-400 text-center py-2">담긴 교복 품목이 없습니다.</p>`;
+        return;
+      }
+
+      let html = '';
+      cart.forEach((el, idx) => {
+        html += `
+          py-2.5 flex justify-between items-center text-sm">
+            <div>
+              <span class="font-bold text-slate-800">${el.item}</span>
+              <span class="text-xs text-slate-500 ml-1">(${el.size})</span>
+            </div>
+            <div class="flex items-center space-x-3">
+              <span class="bg-emerald-100 text-emerald-800 text-xs font-bold px-2 py-0.5 rounded-full">${el.count}벌</span>
+              <button onclick="removeFromCart(${idx})" class="text-rose-400 hover:text-rose-600"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+          </div>
+        `;
+      });
+      // 임시 태그 오타 방지용 깔끔한 주입
+      cartList.innerHTML = `<div class="divide-y divide-slate-100 w-full">${html}</div>`;
+    }
+
+    function submitReservation() {
+      if (cart.length === 0) {
+        alert('대여할 교복을 최소 1개 이상 담아주세요!');
+        return;
+      }
+      const time = document.getElementById('pickupTime').value.trim();
+      if (!time) {
+        alert('수령 희망 시간을 입력해주세요.');
+        return;
+      }
+      alert(`성공적으로 예약되었습니다!\n수령 시간: ${time}\n대기 시간 없이 친환경 교복을 편하게 수령하세요!`);
+      cart = [];
+      renderCart();
+      document.getElementById('pickupTime').value = '';
+    }
+  </script>
+</body>
+</html>
